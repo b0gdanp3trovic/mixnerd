@@ -1,0 +1,101 @@
+.image{
+    height: 110px;
+    width: 110px;
+    align-self: center;
+    margin-top: 50px;
+}
+
+.title{
+    align-self: center;
+    font-family: Chiller;
+    margin-top: 20px;
+}
+
+.pageContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.formContainer{
+    padding: 10px;
+    background-color: steelblue;
+    margin-top: 20px;
+    border-radius: 20px;
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+}
+.timestamplabel{
+    color: white;
+    align-self: center;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.form-group{
+    margin-bottom: 0 !important;
+}
+
+.navContainer{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.navbar{
+    background-color: steelblue;
+}
+
+.brand{
+    color: white !important;
+}
+
+.html{
+    background-color: lightgray;
+}
+
+.toastInvalid{
+    align-self: center;
+    margin-top: 50px;
+    background-color: orangered !important;
+    color: white;
+}
+
+.songTable{
+    width: 50% !important;
+    align-self: center;
+    margin-top: 70px;
+}
+
+.table-dark td{
+    background-color: steelblue !important;
+}
+
+.spinner{
+    align-self: center;
+    width: 90px !important;
+    height: 90px !important;
+    margin-top: 100px;
+}
+
+.mainForm{
+    flex: 1;
+}
+
+.button{
+    margin-left: 15px;
+}
+
+
+.form-check-input{
+    height: 30px !important;
+    width: 30px !important;
+}
+
+.tsWarning{
+    align-self: center;
+    margin-top: 20px;
+}
+
