@@ -1,0 +1,17 @@
+.list-group {
+    width: 50% !important;
+    align-self: center;
+    margin-top: 50px;
+    margin-bottom: 10px !important;
+}
+
+.list-group-item{
+    border: 1px solid steelblue !important;
+    margin-top: 1px;
+}
+
+.buttonMixtape{
+    width: 25% !important;
+    align-self: center;
+    margin-top: 25px;
+}

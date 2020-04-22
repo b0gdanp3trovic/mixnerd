@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import youtube_dl
 import subprocess
 import shutil
@@ -8,6 +8,8 @@ import glob, os
 import dotenv
 import sys
 from flask_cors import CORS, cross_origin
+import requests
+from pydub import AudioSegment
 
 
 app = Flask(__name__)
@@ -87,13 +89,60 @@ def recognize():
                 new_l.append(a)
             index += 1
         return_info = new_l
-
-        
         try:
             shutil.rmtree('temp' + temp_cnt)
         except OSError as e:
             print ("Error: %s - %s." % (e.filename, e.strerror))
     return jsonify(return_info)
+
+@app.route('/mix', methods = ['POST'])
+@cross_origin()
+def mix():
+    main_mix = AudioSegment.empty()
+    temp_cnt = 0
+    for fold in os.listdir('.'):
+        if(fold.startswith('temp')):
+            temp_cnt += 1
+    temp_cnt = str(temp_cnt)
+    data = request.get_json(force=True)
+    url_cnt = 0
+    for url in data['urls']:
+        ydl_opts = {
+            'noplaylist': True,
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192'
+            }],
+            'postprocessor_args': [
+                '-ar', '16000'
+            ],
+            'prefer_ffmpeg': True,
+            'keepvideo': False,
+            'outtmpl': 'temp' + temp_cnt +'/' + 'file' + str(url_cnt) + '.%(ext)s' 
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+        url_cnt += 1
+    os.chdir('./temp' + temp_cnt)
+    playlist_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob.iglob('*.mp3')] 
+    combined = playlist_songs[0]
+
+
+    for song in playlist_songs[1:]:
+        combined = combined.append(song, crossfade=10000)
+    output = open('output.mp3', 'w')
+    combined.export('./output.mp3', format="mp3")
+    os.chdir('..')
+    return send_file('./temp' + temp_cnt + '/output.mp3', as_attachment=True)
+
+@app.route('/info', methods = ['POST'])
+def video_info():
+    url = request.get_json()['url']
+    
+    return requests.get(url).json()
+
 
 if __name__ == "__main__":
     app.run(threaded=True)
