@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Navigation from "../nav/navigation";
 import Image from "react-bootstrap/Image";
 import Form from "react-bootstrap/Form";
@@ -6,13 +6,24 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import './Mixmaker.css'
 import axios from "axios";
+import Toast from "react-bootstrap/Toast";
+import Spinner from "react-bootstrap/Spinner";
+import { animateScroll } from "react-scroll";
+import { v4 } from 'uuid';
+
+
+const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
 
 export default function Mixmaker(){
-
+    const clear = require('../assets/clear.png')
     var image = require('../assets/man-face-with-headphones-sunglasses-and-beard.png');
     const [urlList, setUrlList] = useState([]);
     const [currentUrl, setCurrentUrl] = useState("");
     const [titleList, setTitleList] = useState([]);
+    const [dataLoading, setDataLoading] = useState(false);
+    const [urlAddErr, setUrlAddErr] = useState(false);
+
+    const scrollRef = useRef(null);
 
 
     function addUrl(){
@@ -25,18 +36,23 @@ export default function Mixmaker(){
                 setTitleList([...titleList, title]);
                 setUrlList([...urlList, currentUrl]);
                 setCurrentUrl('');
+                setUrlAddErr(false);
+            }).catch(error => {
+                setUrlAddErr(true);
             });
 
         }
     }
 
     function postUrls(){
+        setDataLoading(true);
         var saveAs = require('file-saver');
         const params = {
             urls: urlList
-        }
+        };
         return axios.post('http://127.0.0.1:5000/mix', params, {responseType: "blob"}).then(response => {
             saveAs(response.data, 'output.mp3');
+            setDataLoading(false);
         })
     }
     return(
@@ -59,13 +75,30 @@ export default function Mixmaker(){
                     <Form.Group controlId="formBasicCheckbox">
                     </Form.Group>
                 </div>
-                <Button  className={"buttonMixtape"}  onClick={postUrls}
-                         variant="outline-secondary">Make a mixtape</Button>{' '}
-                <ListGroup>
+                {urlList.length > 0 && titleList.length > 0 && !dataLoading && <Button  className={"buttonMixtape"}  onClick={postUrls}
+                         variant="outline-secondary">Mix and download</Button>}
+                {urlAddErr && <Toast className={"toastInvalid"}>
+                    <Toast.Body>Error loading url.</Toast.Body>
+                </Toast>}
+                {!dataLoading && <ListGroup>
                     {titleList.map((element, i)=> {
-                        return(<ListGroup.Item key={i}>{element}</ListGroup.Item>)
+                        return(<div key={v4()} className={"listContainer"}><ListGroup.Item ref={scrollRef}>{element}</ListGroup.Item>
+                            <button onClick={() => {
+                                const nTitleList = [...titleList];
+                                const nUrlList = [...urlList];
+                                setTitleList(nTitleList.filter((el, index) => index !== i));
+                                setUrlList(nUrlList.filter((el, index) => index !== i));
+                            }}  className={"deleteButton"}><img className={"clearicon"} src={clear}/></button>
+                        </div>)
                     })}
-                </ListGroup>
+                </ListGroup>}
+                {urlList.length === 0 && <div className={"emptyList"}>Your song list is empty. Add some tracks!</div>}
+                {dataLoading && <Spinner className={"spinner"} animation="border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>}
+                <div id={"reqProcI"} className={"reqProc"}  ref={scrollRef}>
+                    {dataLoading && <div >Your request is being processed...</div>}
+                </div>
             </div>
         </div>
     )

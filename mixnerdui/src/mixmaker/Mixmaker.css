@@ -8,10 +8,47 @@
 .list-group-item{
     border: 1px solid steelblue !important;
     margin-top: 1px;
+    background-color: steelblue !important;
+    color: white !important;
+}
+
+.deleteButton{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: orangered;
+    margin-left: auto;
+    margin-right: 5px;
+    vertical-align: center;
+    align-self: center;
+}
+
+.clearicon {
+    width: 10px;
+    height: 10px;
+    margin-bottom: 1px;
+}
+
+.listContainer{
+    display: flex;
+    flex-direction: row;
+    background-color: steelblue;
+    width: 100%;
 }
 
 .buttonMixtape{
     width: 25% !important;
     align-self: center;
     margin-top: 25px;
+}
+
+.reqProc{
+    align-self: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+}
+
+.emptyList{
+    align-self: center;
+    margin-top: 20px;
 }

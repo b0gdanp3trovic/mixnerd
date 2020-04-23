@@ -10,7 +10,9 @@ import sys
 from flask_cors import CORS, cross_origin
 import requests
 from pydub import AudioSegment
-
+import weakref
+import io
+import threading
 
 app = Flask(__name__)
 dotenv.load_dotenv()
@@ -24,7 +26,6 @@ config = {
     'timeout':10 # seconds
 }
 re = ACRCloudRecognizer(config)
-
 
 @app.route('/rec', methods = ['POST'])
 @cross_origin()
@@ -101,7 +102,7 @@ def mix():
     main_mix = AudioSegment.empty()
     temp_cnt = 0
     for fold in os.listdir('.'):
-        if(fold.startswith('temp')):
+        if(fold.startswith('mm')):
             temp_cnt += 1
     temp_cnt = str(temp_cnt)
     data = request.get_json(force=True)
@@ -120,12 +121,12 @@ def mix():
             ],
             'prefer_ffmpeg': True,
             'keepvideo': False,
-            'outtmpl': 'temp' + temp_cnt +'/' + 'file' + str(url_cnt) + '.%(ext)s' 
+            'outtmpl': 'mm' + temp_cnt +'/' + 'file' + str(url_cnt) + '.%(ext)s' 
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
         url_cnt += 1
-    os.chdir('./temp' + temp_cnt)
+    os.chdir('./mm' + temp_cnt)
     playlist_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob.iglob('*.mp3')] 
     combined = playlist_songs[0]
 
@@ -135,13 +136,20 @@ def mix():
     output = open('output.mp3', 'w')
     combined.export('./output.mp3', format="mp3")
     os.chdir('..')
-    return send_file('./temp' + temp_cnt + '/output.mp3', as_attachment=True)
+    thread = threading.Thread(target=remove_temp, kwargs={'path' : './mm' + temp_cnt})
+    thread.start()
+    return send_file('./mm' + temp_cnt + '/output.mp3', as_attachment=True)
 
 @app.route('/info', methods = ['POST'])
 def video_info():
     url = request.get_json()['url']
     
     return requests.get(url).json()
+
+def remove_temp(path):
+    import time
+    time.sleep(5)
+    shutil.rmtree(path)
 
 
 if __name__ == "__main__":
