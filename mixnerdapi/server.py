@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, Blueprint
 import youtube_dl
 import subprocess
 import shutil
@@ -14,16 +14,16 @@ import weakref
 import io
 import threading
 
-app = Flask(__name__)
+app = Blueprint('app', __name__, url_prefix='')
 dotenv.load_dotenv()
-cors = CORS(app)
 
 config = {
     #Replace "xxxxxxxx" below with your project's host, access_key and access_secret.
     'host':os.getenv('HOST'),
     'access_key':os.getenv('ACCESS_KEY'), 
     'access_secret':os.getenv('ACCESS_SECRET'),
-    'timeout':10 # seconds
+    'timeout':10 # seconds,
+
 }
 re = ACRCloudRecognizer(config)
 
@@ -42,6 +42,7 @@ def recognize():
             temp_cnt += 1
     temp_cnt = str(temp_cnt)
     ydl_opts = {
+        'cachedir' : False,
         'noplaylist': True,
         'format': 'worstaudio/worst',
         'prefer_ffmpeg': True,
@@ -150,7 +151,3 @@ def remove_temp(path):
     import time
     time.sleep(5)
     shutil.rmtree(path)
-
-
-if __name__ == "__main__":
-    app.run(threaded=True)
