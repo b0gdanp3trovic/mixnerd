@@ -6,5 +6,6 @@ The app covers two functionalities:
 * Combining multiple songs into a single mp3 file while adding crossfade.
 
 ![alt text](https://res.cloudinary.com/dev1pdqyr/image/upload/v1592469176/sc1_ol4qm0.png)
+======
 ![alt text](https://res.cloudinary.com/dev1pdqyr/image/upload/v1592469180/sc2_eazbol.png)
 
