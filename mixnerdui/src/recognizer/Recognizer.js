@@ -35,7 +35,7 @@ export default function Recognizer() {
             timestamps: withTimestamps
         };
 
-        axios.post('http://127.0.0.1:5000/rec', params).then(res => {
+        axios.post('/rec', params).then(res => {
 
             console.log(res.data.map(el => console.log(el)));
             setReceivedData(res.data);
