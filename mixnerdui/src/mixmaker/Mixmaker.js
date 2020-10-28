@@ -31,7 +31,7 @@ export default function Mixmaker(){
             const params = {
                 url :'http://www.youtube.com/oembed?url=' + currentUrl + '&format=json'
             };
-            axios.post('http://127.0.0.1:5000/info', params).then(response => {
+            axios.post('/info', params).then(response => {
                 const title = response.data.title;
                 setTitleList([...titleList, title]);
                 setUrlList([...urlList, currentUrl]);
