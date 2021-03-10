@@ -1,0 +1,4 @@
+-- install pyacrcloud manually
+-- install ffmpeg
+-- update youtube-dl
+-- downgrade react-scripts: "react-scripts": "^2.1.8",

@@ -65,8 +65,8 @@ def recognize():
             timestamp_cnt += 1
             if(file.startswith('o')):
                 result = json.loads(re.recognize_by_file('./temp' + temp_cnt + '/' + file, 0))
-                print('ha')
                 if(result):
+                    print(result)
                     if(result.get('metadata') is None):
                         continue
                     artists = map(lambda artist: artist.get('name'), result.get('metadata').get('music')[0].get('artists'))
