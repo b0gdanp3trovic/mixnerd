@@ -32,7 +32,6 @@ re = ACRCloudRecognizer(config)
 def recognize():
     data = request.get_json(force=True)
     url = data['url']
-    print(data['timestamps'])
     segment_time = 120
     if(data['timestamps']):
         segment_time = 15
@@ -59,22 +58,18 @@ def recognize():
         os.remove('./temp' + temp_cnt + '/file.webm')
         return_info = []
         timestamps = []
-        print('gettin')
         timestamp_cnt = 0
         for file in os.listdir('./temp' + temp_cnt):
             timestamp_cnt += 1
             if(file.startswith('o')):
                 result = json.loads(re.recognize_by_file('./temp' + temp_cnt + '/' + file, 0))
                 if(result):
-                    print(result)
                     if(result.get('metadata') is None):
                         continue
                     artists = map(lambda artist: artist.get('name'), result.get('metadata').get('music')[0].get('artists'))
                     artists = ', '.join(artists)
-                    print(result)
                     song_name = result.get('metadata').get('music')[0].get('title')
                     album_name = result.get('metadata').get('music')[0].get('album').get('name')
-                    print(album_name)
                     return_info.append({'artists': artists, 'song_name': song_name, 'album_name': album_name})
                     timestamps.append((timestamp_cnt-1) * 15)
                 os.remove('./temp' + temp_cnt + '/' + file)
@@ -82,7 +77,6 @@ def recognize():
         new_l = []
         index = 0
         for d in return_info:
-            print(d)
             t = tuple(d.items())
             if t not in seen: 
                 a = d.copy()
